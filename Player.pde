@@ -32,9 +32,15 @@ class Player {
 
   // Stage 2-2: Check for collisions with platforms
   void handlePlatformCollision() {
-   
+    for (Platform p : platforms) {
+        if (x + w > p.x && x < p.x + p.w && y + h - feetOffset >= p.y && y + h <= p.y + p.h && ySpeed >= 0) { 
+             y = p.y - h + feetOffset;
+              ySpeed = 0; 
+               y += p.speed;
+           }
+    }
+}
 
-  }
   // End of stage 2-2
 
   boolean AABB(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh) {
@@ -44,9 +50,29 @@ class Player {
 
   // Stage 2-3: handle ceiling and bottom collisions
   void handleCeilingBottomCollision() {
-    // When the player collides with the ceiling or bottom of the screen:
-    // keep the player at the top and subtract health by 1
    
+    if (y <= 0) {
+    y = 0; 
+    if (!invincible && !damaged) {
+      health -= 1; 
+      damaged =true;
+      damageTimer = DAMAGE_BLINK_DURATION;
+    }
+  }
+
+ 
+  if (y > height) {
+    y = 0;
+   
+    if (!invincible && !damaged) {
+      health -= 1;
+       damaged =true;
+      damageTimer = DAMAGE_BLINK_DURATION;
+      damaged =true;
+      damageTimer = DAMAGE_BLINK_DURATION;
+    }
+
+  }
 
     // Stage 3-2: 
     // This block checks if the player is not invincible and not already in a damaged state:
@@ -66,17 +92,49 @@ class Player {
     // - If the player is invincible, the invincibility timer decreases each frame.
     //   Once the timer reaches 0, the player is no longer invincible.
     // - If the player is in a damaged state, the damage timer decreases each frame.
-    //   Once the timer reaches 0, the damaged state is cleared.
-    // These timers ensure that the player has temporary protection after taking damage
+     //   Once the timer reaches 0, the damaged state is cleared.
+     // These timers ensure that the player has temporary protection after taking damage
     // and provides visual feedback (e.g., blinking effect) during these states.
 
+    if (invincible){
+      damaged = false;
+      invincibilityTimer--;
+      tint(255,126); 
+  
+    if (invincibilityTimer <= 0) {
+            invincible = false;  
+              noTint(); 
+    }
+    } else {
+      if (damaged) {
+      damageTimer--;
+        tint(255, 0, 0); 
+ if (damageTimer <= 0) {
+        damaged = false; 
+        damageTimer = DAMAGE_BLINK_DURATION; 
+        }
+    } else {
+      noTint(); 
+    }
+    }
   }
   // End of stage 3-1
 
   // Stage 3-3: Cycle through animation frames based on timer
   void updateAnimation() {
+   if (moveDir == 0) {
     
-    
+    spriteIndex = 0;
+    animatedFrameIndex = 0;
+  } else if (moveDir == -1) {
+   
+    spriteIndex = 1;
+    animatedFrameIndex = (frameCount / 10) % 2; 
+  } else if (moveDir == 1) {
+   
+    spriteIndex = 2;
+    animatedFrameIndex = (frameCount / 10) % 2; 
+      }    
   }
   // End of stage 3-3
 
